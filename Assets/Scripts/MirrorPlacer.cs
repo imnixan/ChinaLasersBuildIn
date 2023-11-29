@@ -54,4 +54,17 @@ public class MirrorPlacer : MonoBehaviour
             ShineIsland?.Invoke();
         }
     }
+
+    public void RestoreButton()
+    {
+        placeState = false;
+        button.image.color = Color.white;
+        button.interactable = true;
+        PutOutIsland?.Invoke();
+    }
+
+    public void SetNotActive()
+    {
+        button.interactable = false;
+    }
 }

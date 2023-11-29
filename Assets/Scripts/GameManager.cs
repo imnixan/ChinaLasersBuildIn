@@ -42,6 +42,7 @@ public class GameManager : MonoBehaviour
 
     private bool gameReady;
     private int levelIndex;
+    private MirrorPlacer mp;
 
     private void Start()
     {
@@ -54,6 +55,7 @@ public class GameManager : MonoBehaviour
         levelIndex = PlayerPrefs.GetInt("CurrentLevel");
         currentField = Instantiate(gameFields[levelIndex]);
         currentField.Init(placeButton.GetComponentInChildren<TextMeshProUGUI>());
+        mp = currentField.GetComponent<MirrorPlacer>();
         placeButton.onClick.AddListener(currentField.GetComponent<MirrorPlacer>().PlaceMirror);
         tigerLaser = currentField.GetComponentInChildren<TigerLaser>();
         tigerLaser.Init(line, laser, ricoshet, diamond);
@@ -85,6 +87,8 @@ public class GameManager : MonoBehaviour
         if (gameReady)
         {
             tigerLaser.Fire();
+            mp.RestoreButton();
+            mp.SetNotActive();
         }
     }
 
@@ -92,6 +96,7 @@ public class GameManager : MonoBehaviour
     {
         if (gameReady)
         {
+            mp.RestoreButton();
             Sequence restartAnim = DOTween.Sequence();
             if (loseScreen.anchoredPosition.y == 0)
             {
