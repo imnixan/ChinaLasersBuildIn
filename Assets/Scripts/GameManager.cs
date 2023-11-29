@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        Application.targetFrameRate = 300;
         currentField = Instantiate(gameFields[PlayerPrefs.GetInt("CurrentLevel")]);
         currentField.Init(placeButton.GetComponentInChildren<TextMeshProUGUI>());
         placeButton.onClick.AddListener(currentField.GetComponent<MirrorPlacer>().PlaceMirror);
