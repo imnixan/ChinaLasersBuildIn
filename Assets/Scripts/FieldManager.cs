@@ -4,7 +4,7 @@ using TMPro;
 public class FieldManager : MonoBehaviour
 {
     [SerializeField]
-    private int totalDiamonds,
+    public int totalDiamonds,
         shinedDiamonds;
 
     [SerializeField]

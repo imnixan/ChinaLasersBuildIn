@@ -7,9 +7,9 @@ using Debug = UnityEngine.Debug;
 
 namespace TrueClouds
 {
-    class CloudCamera3D: CloudCamera
+    class CloudCamera3D : CloudCamera
     {
-        [ImageEffectOpaque]
+        //[ImageEffectOpaque]
         private void OnRenderImage(RenderTexture source, RenderTexture destination)
         {
             RenderClouds(source, destination);

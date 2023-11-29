@@ -19,8 +19,15 @@ public class TigerLaser : MonoBehaviour
     private float yPos;
     private int ignoreMask = ~(1 << 8);
 
-    public void Init(LineRenderer line)
+    private AudioClip laserSound,
+        ricoshet,
+        diamond;
+
+    public void Init(LineRenderer line, AudioClip laser, AudioClip ricoshet, AudioClip diamond)
     {
+        this.laserSound = laser;
+        this.ricoshet = ricoshet;
+        this.diamond = diamond;
         yPos = transform.position.y;
         laserPoints = new List<Vector3>();
         this.line = line;
@@ -68,7 +75,7 @@ public class TigerLaser : MonoBehaviour
         testObject.transform.position = transform.position;
         testObject
             .AddComponent<LaserPathFinder>()
-            .StartDraw(this, drawSpeed, laserPoints.ToArray());
+            .StartDraw(this, drawSpeed, laserPoints.ToArray(), ricoshet, diamond);
     }
 
     public void Fire()
@@ -80,6 +87,10 @@ public class TigerLaser : MonoBehaviour
             lastPos = transform.position;
             direction = transform.forward;
             laserPoints.Add(lastPos);
+            if (PlayerPrefs.GetInt("Sound") == 0)
+            {
+                AudioSource.PlayClipAtPoint(laserSound, Vector3.zero);
+            }
             BuildLazer();
         }
     }

@@ -6,10 +6,12 @@ using UnityEngine.EventSystems;
 public class Mirror : MonoBehaviour, IPointerClickHandler
 {
     public int angle;
+    private ParticleSystem ps;
 
     private void Start()
     {
-        Rotate();
+        SetAngle();
+        ps = GetComponentInChildren<ParticleSystem>();
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -18,6 +20,12 @@ public class Mirror : MonoBehaviour, IPointerClickHandler
     }
 
     private void Rotate()
+    {
+        ps.Play();
+        SetAngle();
+    }
+
+    private void SetAngle()
     {
         if (angle == 315)
         {

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class LaserPathFinder : MonoBehaviour
 {
@@ -8,9 +9,20 @@ public class LaserPathFinder : MonoBehaviour
     private List<Vector3> laserPoints;
     public Vector3[] points;
     private float drawSpeed;
+    public static event UnityAction PathFinished;
+    private AudioClip ricoshetSound,
+        diamondSound;
 
-    public void StartDraw(TigerLaser tigerLaser, float drawSpeed, Vector3[] points)
+    public void StartDraw(
+        TigerLaser tigerLaser,
+        float drawSpeed,
+        Vector3[] points,
+        AudioClip ricoshet,
+        AudioClip diamond
+    )
     {
+        this.ricoshetSound = ricoshet;
+        this.diamondSound = diamond;
         this.points = points;
         this.drawSpeed = drawSpeed;
         this.tigerLaser = tigerLaser;
@@ -29,10 +41,10 @@ public class LaserPathFinder : MonoBehaviour
             Vector3 destination = points[index];
             transform.position = Vector3.MoveTowards(transform.position, destination, drawSpeed);
             if (
-                transform.position.z < -18
-                || transform.position.z > 0
-                || transform.position.x < -5
-                || transform.position.x > 12.5
+                transform.position.z < -19
+                || transform.position.z > 1
+                || transform.position.x < -6
+                || transform.position.x > 13.5
             )
             {
                 uiLine[uiLine.Count - 1] = transform.position;
@@ -56,7 +68,7 @@ public class LaserPathFinder : MonoBehaviour
 
     private void EndPath()
     {
-        Debug.Log("END");
+        PathFinished?.Invoke();
         Destroy(gameObject);
     }
 
@@ -66,6 +78,17 @@ public class LaserPathFinder : MonoBehaviour
         {
             Diamond diamond = collider.GetComponent<Diamond>();
             diamond.ShineDiamond();
+            if (PlayerPrefs.GetInt("Sound") == 0)
+            {
+                AudioSource.PlayClipAtPoint(diamondSound, Vector3.zero);
+            }
+        }
+        else if (collider.CompareTag("Mirror"))
+        {
+            if (PlayerPrefs.GetInt("Sound") == 0)
+            {
+                AudioSource.PlayClipAtPoint(ricoshetSound, Vector3.zero);
+            }
         }
     }
 }
