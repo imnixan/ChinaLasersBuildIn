@@ -7,16 +7,21 @@ public class Mirror : MonoBehaviour, IPointerClickHandler
 {
     public int angle;
     private ParticleSystem ps;
+    private bool initiated;
 
     private void Start()
     {
         SetAngle();
         ps = GetComponentInChildren<ParticleSystem>();
+        initiated = true;
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Rotate();
+        if (initiated)
+        {
+            Rotate();
+        }
     }
 
     private void Rotate()

@@ -14,24 +14,40 @@ public class MenuController : MonoBehaviour
     private GameObject[] locks;
 
     [SerializeField]
+    private Image loadingScreen;
+
+    [SerializeField]
+    private RectTransform rotateSign;
+
+    [SerializeField]
     private Button[] levelButtons;
+
+    private bool loading;
 
     private void Awake()
     {
         settingsScreen.anchoredPosition = new Vector2(2000, 0);
         Application.targetFrameRate = 300;
         Screen.orientation = ScreenOrientation.Portrait;
+        loadingScreen.color = new Color(0, 0, 0, 0);
+        loadingScreen.raycastTarget = false;
     }
 
     private void Start()
     {
         for (int i = 1; i < 6; i++)
         {
-            if (!PlayerPrefs.HasKey(i.ToString()))
-            {
-                levelButtons[i].interactable = false;
-                locks[i - 1].SetActive(true);
-            }
+            bool levelOpened = PlayerPrefs.HasKey(i.ToString());
+            levelButtons[i].interactable = levelOpened;
+            locks[i - 1].SetActive(!levelOpened);
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (loading)
+        {
+            rotateSign.Rotate(0, 0, 0.5f);
         }
     }
 
@@ -62,6 +78,24 @@ public class MenuController : MonoBehaviour
     {
         PlayerPrefs.SetInt("CurrentLevel", level);
         PlayerPrefs.Save();
-        SceneManager.LoadScene("GameField");
+        loading = true;
+        Sequence load = DOTween.Sequence();
+
+        load.PrependCallback(() =>
+            {
+                loadingScreen.raycastTarget = true;
+            })
+            .Append(loadingScreen.DOColor(Color.white, 0.5f))
+            .AppendInterval(0.5f)
+            .AppendCallback(() =>
+            {
+                SceneManager.LoadSceneAsync("GameField");
+            })
+            .Restart();
+    }
+
+    public void Exit()
+    {
+        Application.Quit();
     }
 }

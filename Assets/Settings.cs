@@ -5,25 +5,19 @@ using DG.Tweening;
 public class Settings : MonoBehaviour
 {
     [SerializeField]
-    private Image soundIcon,
+    private GameObject soundIcon,
         musicIcon;
 
     private AudioSource musicMenu;
     private RectTransform rt;
-    private Color green,
-        red;
 
     private void Start()
     {
-        green = Color.green / 2;
-        green.a = 1;
-        red = Color.red;
-        red.a = 1;
         rt = GetComponent<RectTransform>();
         musicMenu = GetComponent<AudioSource>();
-        soundIcon.color = PlayerPrefs.GetInt("Sound") == 0 ? green : red;
+        soundIcon.SetActive(PlayerPrefs.GetInt("Sound") == 0);
 
-        musicIcon.color = PlayerPrefs.GetInt("Music") == 0 ? green : red;
+        musicIcon.SetActive(PlayerPrefs.GetInt("Music") == 0);
 
         if (PlayerPrefs.GetInt("Music") == 0)
         {
@@ -35,14 +29,14 @@ public class Settings : MonoBehaviour
     {
         PlayerPrefs.SetInt("Sound", PlayerPrefs.GetInt("Sound") == 0 ? 1 : 0);
         PlayerPrefs.Save();
-        soundIcon.color = PlayerPrefs.GetInt("Sound") == 0 ? green : red;
+        soundIcon.SetActive(PlayerPrefs.GetInt("Sound") == 0);
     }
 
     public void ChangeMusic()
     {
         PlayerPrefs.SetInt("Music", PlayerPrefs.GetInt("Music") == 0 ? 1 : 0);
         PlayerPrefs.Save();
-        musicIcon.color = PlayerPrefs.GetInt("Music") == 0 ? green : red;
+        musicIcon.SetActive(PlayerPrefs.GetInt("Music") == 0);
         if (PlayerPrefs.GetInt("Music") == 0)
         {
             musicMenu.Play();

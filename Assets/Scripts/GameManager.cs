@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
-using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -40,12 +39,13 @@ public class GameManager : MonoBehaviour
         ricoshet,
         diamond;
 
-    private bool gameReady;
     private int levelIndex;
     private MirrorPlacer mp;
+    private bool canFire;
 
     private void Start()
     {
+        canFire = true;
         musicPlayer = GetComponent<AudioSource>();
         if (PlayerPrefs.GetInt("Music") == 0 && !musicPlayer.isPlaying)
         {
@@ -77,15 +77,15 @@ public class GameManager : MonoBehaviour
             {
                 leftCloud.gameObject.SetActive(false);
                 rightCloud.gameObject.SetActive(false);
-                gameReady = true;
             })
             .Restart();
     }
 
     public void Fire()
     {
-        if (gameReady)
+        if (canFire)
         {
+            canFire = false;
             tigerLaser.Fire();
             mp.RestoreButton();
             mp.SetNotActive();
@@ -94,33 +94,29 @@ public class GameManager : MonoBehaviour
 
     public void Restart()
     {
-        if (gameReady)
+        mp.RestoreButton();
+        Sequence restartAnim = DOTween.Sequence();
+        if (loseScreen.anchoredPosition.x == 0)
         {
-            mp.RestoreButton();
-            Sequence restartAnim = DOTween.Sequence();
-            if (loseScreen.anchoredPosition.y == 0)
-            {
-                restartAnim.Append(loseScreen.DOAnchorPosY(2000, 0.5f));
-            }
-            restartAnim
-                .PrependCallback(() =>
-                {
-                    gameReady = false;
-                    leftCloud.gameObject.SetActive(true);
-                    rightCloud.gameObject.SetActive(true);
-                })
-                .Append(topHud.DOAnchorPosY(500, 0.5f))
-                .Join(botHud.DOAnchorPosY(-500, 0.5f))
-                .Append(leftCloud.DOLocalMoveX(-2.5f, 0.5f))
-                .Join(rightCloud.DOLocalMoveX(2.5f, 0.5f))
-                .AppendCallback(() =>
-                {
-                    Destroy(currentField.gameObject);
-                    OnDisable();
-                    Start();
-                })
-                .Restart();
+            restartAnim.Insert(1, loseScreen.DOAnchorPosX(2000, 0.5f));
         }
+        restartAnim
+            .PrependCallback(() =>
+            {
+                leftCloud.gameObject.SetActive(true);
+                rightCloud.gameObject.SetActive(true);
+            })
+            .Append(topHud.DOAnchorPosY(500, 0.5f))
+            .Join(botHud.DOAnchorPosY(-500, 0.5f))
+            .Append(leftCloud.DOLocalMoveX(-2.5f, 0.5f))
+            .Join(rightCloud.DOLocalMoveX(2.5f, 0.5f))
+            .AppendCallback(() =>
+            {
+                Destroy(currentField.gameObject);
+                OnDisable();
+                Start();
+            })
+            .Restart();
     }
 
     private void OnPathFinished()
@@ -130,13 +126,13 @@ public class GameManager : MonoBehaviour
         if (currentField.shinedDiamonds == currentField.totalDiamonds)
         {
             Debug.Log("WINT");
-            winScreen.DOAnchorPosY(0, 0.5f);
-            PlayerPrefs.SetInt(levelIndex.ToString(), 1);
+            PlayerPrefs.SetInt((levelIndex + 1).ToString(), 1);
             PlayerPrefs.Save();
+            winScreen.DOAnchorPosX(0, 0.5f).Play();
         }
         else
         {
-            loseScreen.DOAnchorPosY(0, 0.5f);
+            loseScreen.DOAnchorPosX(0, 0.5f).Play();
             Debug.Log("LOSE");
         }
     }
@@ -154,7 +150,6 @@ public class GameManager : MonoBehaviour
         {
             PlayerPrefs.SetInt("CurrentLevel", levelIndex);
             PlayerPrefs.Save();
-            Sequence nextAnim = DOTween.Sequence();
             Restart();
         }
         else
