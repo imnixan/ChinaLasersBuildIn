@@ -11,6 +11,9 @@ public class MenuController : MonoBehaviour
         menuScreen;
 
     [SerializeField]
+    private Image bgBlur;
+
+    [SerializeField]
     private GameObject[] locks;
 
     [SerializeField]
@@ -26,6 +29,7 @@ public class MenuController : MonoBehaviour
 
     private void Awake()
     {
+        bgBlur.color = new Color(0, 0, 0, 0);
         settingsScreen.anchoredPosition = new Vector2(2000, 0);
         Application.targetFrameRate = 300;
         Screen.orientation = ScreenOrientation.Portrait;
@@ -40,6 +44,15 @@ public class MenuController : MonoBehaviour
             bool levelOpened = PlayerPrefs.HasKey(i.ToString());
             levelButtons[i].interactable = levelOpened;
             locks[i - 1].SetActive(!levelOpened);
+            levelButtons[i].GetComponent<Animator>().enabled = levelOpened;
+        }
+        for (int i = 5; i >= 0; i--)
+        {
+            if (levelButtons[i].interactable)
+            {
+                levelButtons[i].GetComponentInChildren<ParticleSystem>().Play();
+                return;
+            }
         }
     }
 
@@ -56,6 +69,8 @@ public class MenuController : MonoBehaviour
         if (menuScreen.anchoredPosition.x == 0)
         {
             settingsScreen.DOAnchorPosX(0, 0.5f);
+            menuScreen.DOAnchorPosX(-2000, 0.5f);
+            bgBlur.DOColor(Color.white, 0.5f);
         }
     }
 
@@ -64,6 +79,7 @@ public class MenuController : MonoBehaviour
         if (menuScreen.anchoredPosition.x == 0 && settingsScreen.anchoredPosition.x == 2000)
         {
             menuScreen.DOAnchorPosX(-2000, 0.5f);
+            bgBlur.DOColor(Color.white, 0.5f);
             levelScreen.DOAnchorPosY(0, 0.5f);
         }
     }
@@ -72,6 +88,7 @@ public class MenuController : MonoBehaviour
     {
         menuScreen.DOAnchorPosX(0, 0.5f);
         levelScreen.DOAnchorPosY(2000, 0.5f);
+        bgBlur.DOColor(new Color(0, 0, 0, 0), 0.5f);
     }
 
     public void PlayLevel(int level)

@@ -8,8 +8,14 @@ public class Settings : MonoBehaviour
     private GameObject soundIcon,
         musicIcon;
 
+    [SerializeField]
+    private RectTransform menuRt;
+
     private AudioSource musicMenu;
     private RectTransform rt;
+
+    [SerializeField]
+    private Image bgBlur;
 
     private void Start()
     {
@@ -50,5 +56,7 @@ public class Settings : MonoBehaviour
     public void Close()
     {
         rt.DOAnchorPosX(2000, 0.5f);
+        menuRt.DOAnchorPosX(0, 0.5f);
+        bgBlur.DOColor(new Color(0, 0, 0, 0), 0.5f);
     }
 }
